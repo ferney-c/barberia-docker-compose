@@ -35,9 +35,10 @@ docker-compose exec app php artisan route:clear
 
 echo.
 echo ==========================================
-echo ✅ ¡TODO LISTO! YA PUEDES USAR LA APP ✅
+echo  ¡TODO LISTO! YA PUEDES USAR LA APP 
 echo ==========================================
 echo Backend: http://localhost:9000
 echo Frontend: http://localhost:8080
 echo.
+
 pause
