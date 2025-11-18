@@ -1,1 +1,3 @@
 # barberia-docker-compose
+
+Intrucciónes para la dockerización del aplicativo de barberia...
