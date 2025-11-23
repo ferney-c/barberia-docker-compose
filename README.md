@@ -1,4 +1,4 @@
-# 🧑‍💻 BarberConnect - Dockerizacion
+# 🧑‍💻 BarberConnect - Dockerización
 
 Este documento explica **exactamente** cómo levantar el proyecto con Docker en ambiente de equipo (desarrollo y producción). Está diseñado para que cualquier integrante pueda instalar y ejecutar el sistema sin conocer Docker a profundidad.
 
@@ -145,10 +145,30 @@ docker compose ps
 docker compose logs -f
 ```
 
+### Ver logs de un servicio específico
+
+```bash
+# Frontend
+docker compose logs -f frontend
+
+# Backend
+docker compose logs -f backend
+
+# Base de datos
+docker compose logs -f db
+```
+
 ### Reiniciar un servicio específico
 
 ```bash
-docker compose restart {service-name}
+# Reiniciar frontend
+docker compose restart frontend
+
+# Reiniciar backend
+docker compose restart backend
+
+# Reiniciar base de datos
+docker compose restart db
 ```
 
 ### Detener todo
@@ -167,37 +187,41 @@ docker compose down -v
 
 ---
 
-# 🔧 6. Trabajar con el Backend en (Laravel)
+# 🔧 6. Trabajar con Backend (Laravel)
 
-### Acceder al contenedor del Backend
+### Acceder al contenedor del backend
+
 ```bash
 docker compose exec backend bash
 ```
 
 ### Ejecutar comandos de Artisan
 
-**Desde fuera del contenedor**
 ```bash
+# Desde fuera del contenedor
 docker compose exec backend php artisan migrate
 docker compose exec backend php artisan db:seed
 docker compose exec backend php artisan cache:clear
 docker compose exec backend php artisan config:clear
 docker compose exec backend php artisan route:list
-```
 
-**Crear un nuevo controlador**
-```bash
+# Crear un nuevo controlador
 docker compose exec backend php artisan make:controller NombreController
-```
 
-**Crear un nuevo modelo**
-```bash
+# Crear un nuevo modelo
 docker compose exec backend php artisan make:model NombreModelo -m
-```
 
-**Crear una migración**
-```bash
+# Crear una migración
 docker compose exec backend php artisan make:migration crear_tabla_nombre
+
+# Crear un seeder
+docker compose exec backend php artisan make:seeder NombreSeeder
+
+# Crear un middleware
+docker compose exec backend php artisan make:middleware NombreMiddleware
+
+# Crear un request
+docker compose exec backend php artisan make:request NombreRequest
 ```
 
 ### Instalar nuevos paquetes de Composer
@@ -231,16 +255,85 @@ docker compose exec frontend npm install paquete
 docker compose exec frontend npm install
 ```
 
+### Comandos de Ionic CLI
+
+```bash
+# Generar una nueva página
+docker compose exec frontend ionic generate page nombre-pagina
+
+# Generar un nuevo componente
+docker compose exec frontend ionic generate component nombre-componente
+
+# Generar un nuevo servicio
+docker compose exec frontend ionic generate service nombre-servicio
+
+# Generar un guard
+docker compose exec frontend ionic generate guard nombre-guard
+
+# Generar un pipe
+docker compose exec frontend ionic generate pipe nombre-pipe
+
+# Generar un module
+docker compose exec frontend ionic generate module nombre-module
+
+# Ver información del proyecto Ionic
+docker compose exec frontend ionic info
+
+# Compilar para producción
+docker compose exec frontend ionic build --prod
+
+# Ejecutar tests
+docker compose exec frontend npm test
+
+# Verificar errores de linting
+docker compose exec frontend npm run lint
+```
+
+### Comandos de Capacitor (para apps móviles)
+
+```bash
+# Sincronizar cambios con plataformas nativas
+docker compose exec frontend npx cap sync
+
+# Agregar plataforma Android
+docker compose exec frontend npx cap add android
+
+# Agregar plataforma iOS
+docker compose exec frontend npx cap add ios
+
+# Copiar archivos web a plataformas nativas
+docker compose exec frontend npx cap copy
+
+# Actualizar Capacitor
+docker compose exec frontend npx cap update
+```
+
 ### Reconstruir el frontend
 
-**Si modificaste archivos y necesitas reconstruir:**
+Si modificaste archivos y necesitas reconstruir:
+
 ```bash
 docker compose restart frontend
 ```
 
-**O reconstruir la imagen completamente:**
+O reconstruir la imagen completamente:
+
 ```bash
 docker compose up -d --build frontend
+```
+
+### Limpiar caché de Ionic/Angular
+
+```bash
+# Limpiar caché de npm
+docker compose exec frontend npm cache clean --force
+
+# Eliminar node_modules y reinstalar
+docker compose exec frontend rm -rf node_modules
+docker compose exec frontend npm install
+
+# Limpiar cache de Ionic
+docker compose exec frontend ionic repair
 ```
 
 ---
@@ -248,25 +341,32 @@ docker compose up -d --build frontend
 # 🗄️ 8. Trabajar con la Base de Datos
 
 ### Conectarse a MySQL desde la terminal
+
 ```bash
 docker compose exec db mysql -uroot -p
 ```
-Luego ingresa la contraseña definida en ```docker-compose.yml```.
+
+Luego ingresa la contraseña definida en `docker-compose.yml`.
 
 ### Ejecutar un dump de la base de datos
+
 ```bash
 docker compose exec db mysqldump -uroot -p laravel_db > backup.sql
 ```
 
 ### Importar un dump SQL
+
 ```bash
 docker compose exec -T db mysql -uroot -p laravel_db < backup.sql
 ```
 
 ### Resetear la base de datos
+
 ```bash
 docker compose exec backend php artisan migrate:fresh --seed
 ```
+
+⚠️ **Esto borra todos los datos y vuelve a ejecutar las migraciones.**
 
 ---
 
@@ -299,7 +399,7 @@ sudo chown -R $USER:$USER ../barberia-frontend
 
 ### ❌ Cambios en el código no se reflejan
 
-para Backend:
+Para backend:
 
 ```bash
 docker compose exec backend php artisan config:clear
@@ -332,7 +432,7 @@ docker compose logs db
 # 🔐 10. Credenciales de la base de datos
 
 ```
-Host: localhost
+Host: localhost (desde tu máquina) / db (desde contenedores)
 Puerto: 3307
 Usuario: root
 Contraseña: (definida en docker-compose.yml)
@@ -344,12 +444,12 @@ Base de datos: laravel_db
 # 🧭 11. Flujo recomendado de trabajo en equipo
 
 1. Hacer `pull` del repositorio
-2. Levantar contenedores: ```docker compose up -d --build```
+2. Levantar contenedores: `docker compose up -d --build`
 3. Ejecutar `setup.sh` o `setup.bat`
 4. Probar en navegador
 5. Trabajar normalmente
-6. Si hay cambios en dependencias, reconstruir: ```docker compose up -d --build```
-7. Al terminar: ```docker compose down```
+6. Si hay cambios en dependencias, reconstruir: `docker compose up -d --build`
+7. Al terminar: `docker compose down`
 
 ---
 
@@ -389,14 +489,13 @@ docker compose down -v
 
 ---
 
-# 🤝 9. Soporte interno
+# 🤝 13. Soporte interno
 
 Para dudas o fallas:
 
 * Revisar logs con: `docker compose logs -f`
 * Confirmar contenedores activos: `docker compose ps`
-* Verificar conectividad entre servicios: ```docker compose exec backend ping db```
-
+* Verificar conectividad entre servicios: `docker compose exec backend ping db`
 
 ---
 
