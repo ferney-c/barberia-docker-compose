@@ -4,7 +4,7 @@ services:
   frontend:
     build:
       context: ../barberia-frontend
-      dockerfile: Dockerfile.dev  # Usamos un Dockerfile especial para desarrollo
+      dockerfile: Dockerfile
     container_name: frontend
     ports:
       - "8080:8100"  # Puerto de Ionic dev server

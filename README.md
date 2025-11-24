@@ -2,11 +2,9 @@
 
 Este documento explica **exactamente** cómo levantar el proyecto con Docker en ambiente de equipo (desarrollo y producción). Está diseñado para que cualquier integrante pueda instalar y ejecutar el sistema sin conocer Docker a profundidad.
 
----
+## 📁 Estructura del Proyecto
 
-# 📁 Estructura del Proyecto
-
-```
+```txt
 BarberConnect/
 ├── barberia-backend/          # Backend Laravel + PHP
 │   ├── Dockerfile
@@ -14,7 +12,6 @@ BarberConnect/
 │   └── ...
 ├── barberia-frontend/         # Frontend Angular/Ionic
 │   ├── Dockerfile
-│   ├── Dockerfile.dev
 │   ├── nginx.conf
 │   └── ...
 └── barberia-docker-compose/   # Configuración Docker
@@ -24,9 +21,7 @@ BarberConnect/
     └── README.md
 ```
 
----
-
-# 🚀 1. Requisitos
+## 🚀 1. Requisitos
 
 Antes de iniciar, **instala lo siguiente:**
 
@@ -44,9 +39,7 @@ docker --version
 docker compose version
 ```
 
----
-
-# ▶️ 2. Cómo levantar el proyecto (Modo Equipo)
+## ▶️ 2. Cómo levantar el proyecto (Modo Desarrollo)
 
 Este modo utiliza **docker-compose.yml** (producción ligera) y los scripts de configuración automáticos.
 
@@ -56,27 +49,35 @@ Se recomienda usar este modo para:
 * Trabajo en equipo
 * Revisar funcionalidades integradas
 
----
+## 🟦 3. Pasos para iniciar el sistema
 
-# 🟦 3. Pasos para iniciar el sistema
-
-## **Paso 1: Ubicarse en la carpeta del docker-compose**
-
-Windows:
-
-```cmd
-cd barberia-docker-compose
-```
-
-Mac/Linux:
+### **Paso 1: Ubicarse en la carpeta `barberia-frontend` para ponerlo en modo desarrollo**
 
 ```bash
+# Retroceder a la raiz
+cd ..
+
+# Entrar a la carpeta del Frontend
+cd barberia-frontend
+```
+
+Cambiarse a la rama de desarrollo
+
+```bash
+git switch develop
+```
+
+### **Paso 2: Ubicarse en la carpeta del `barberia-docker-compose`**
+
+```bash
+# Retroceder a la raiz
+cd ..
+
+# Entrar a la carpeta que se encarga de la dockerización
 cd barberia-docker-compose
 ```
 
----
-
-## **Paso 2: Construir e iniciar los contenedores**
+### **Paso 3: Construir e iniciar los contenedores**
 
 ```bash
 docker compose up -d --build
@@ -84,23 +85,21 @@ docker compose up -d --build
 
 Esto levantará:
 
-* **Frontend (Ionic/Angular + Nginx)** → Puerto 8080
+* **Frontend (Ionic/Angular + Nginx) en modo desarrollo** → Puerto 8080
 * **Backend Laravel (PHP-FPM + Nginx)** → Puerto 9000
 * **Base de datos MySQL** → Puerto 3307
 
----
-
-## **Paso 3: Ejecutar el script de inicialización**
+### **Paso 4: Ejecutar el script de inicialización**
 
 Este script prepara Laravel automáticamente.
 
-### Windows:
+#### Windows
 
 ```cmd
 setup.bat
 ```
 
-### Linux/Mac:
+#### Linux/Mac
 
 ```bash
 chmod +x setup.sh
@@ -117,9 +116,7 @@ Este script hace:
 6. Limpia cachés
 7. Configura permisos
 
----
-
-# 🌐 4. Acceso a la aplicación
+## 🌐 4. Acceso a la aplicación
 
 Una vez cargado todo:
 
@@ -129,9 +126,7 @@ Una vez cargado todo:
 | Backend API | [http://localhost:9000](http://localhost:9000) |
 | MySQL       | localhost:3307                                 |
 
----
-
-# 🧪 5. Comandos útiles del equipo
+## 🧪 5. Comandos útiles del equipo
 
 ### Ver estado de los contenedores
 
@@ -185,9 +180,7 @@ docker compose down -v
 
 ⚠️ **Esto borra todos los datos del contenedor.**
 
----
-
-# 🔧 6. Trabajar con Backend (Laravel)
+## 🔧 6. Trabajar con Backend (Laravel)
 
 ### Acceder al contenedor del backend
 
@@ -238,9 +231,7 @@ docker compose exec backend composer update
 docker compose exec backend tail -f storage/logs/laravel.log
 ```
 
----
-
-# 🎨 7. Trabajar con Frontend (Angular/Ionic)
+## 🎨 7. Trabajar con Frontend (Angular/Ionic)
 
 ### Acceder al contenedor del frontend
 
@@ -336,9 +327,7 @@ docker compose exec frontend npm install
 docker compose exec frontend ionic repair
 ```
 
----
-
-# 🗄️ 8. Trabajar con la Base de Datos
+## 🗄️ 8. Trabajar con la Base de Datos
 
 ### Conectarse a MySQL desde la terminal
 
@@ -368,9 +357,7 @@ docker compose exec backend php artisan migrate:fresh --seed
 
 ⚠️ **Esto borra todos los datos y vuelve a ejecutar las migraciones.**
 
----
-
-# 🛠️ 9. Problemas comunes
+## 🛠️ 9. Problemas comunes
 
 ### ❌ "Puerto 8080/9000/3307 está en uso"
 
@@ -399,17 +386,13 @@ sudo chown -R $USER:$USER ../barberia-frontend
 
 ### ❌ Cambios en el código no se reflejan
 
-Para backend:
-
 ```bash
+# Para backend:
 docker compose exec backend php artisan config:clear
 docker compose exec backend php artisan cache:clear
 docker compose restart backend
-```
 
-Para frontend:
-
-```bash
+# Para frontend:
 docker compose restart frontend
 ```
 
@@ -427,11 +410,9 @@ Verificar logs de la base de datos:
 docker compose logs db
 ```
 
----
+## 🔐 10. Credenciales de la base de datos
 
-# 🔐 10. Credenciales de la base de datos
-
-```
+```txt
 Host: localhost (desde tu máquina) / db (desde contenedores)
 Puerto: 3307
 Usuario: root
@@ -439,9 +420,7 @@ Contraseña: (definida en docker-compose.yml)
 Base de datos: laravel_db
 ```
 
----
-
-# 🧭 11. Flujo recomendado de trabajo en equipo
+## 🧭 11. Flujo recomendado de trabajo en equipo
 
 1. Hacer `pull` del repositorio
 2. Levantar contenedores: `docker compose up -d --build`
@@ -451,9 +430,7 @@ Base de datos: laravel_db
 6. Si hay cambios en dependencias, reconstruir: `docker compose up -d --build`
 7. Al terminar: `docker compose down`
 
----
-
-# 📋 12. Cheat Sheet de comandos Docker Compose
+## 📋 12. Cheat Sheet de comandos Docker Compose
 
 ```bash
 # Levantar servicios
@@ -487,9 +464,7 @@ docker compose exec <servicio> bash  # o sh
 docker compose down -v
 ```
 
----
-
-# 🤝 13. Soporte interno
+## 🤝 13. Soporte interno
 
 Para dudas o fallas:
 
@@ -497,6 +472,4 @@ Para dudas o fallas:
 * Confirmar contenedores activos: `docker compose ps`
 * Verificar conectividad entre servicios: `docker compose exec backend ping db`
 
----
-
-**BarberConnect — Documentación oficial del equipo**
+## BarberConnect — Documentación oficial del equipo
